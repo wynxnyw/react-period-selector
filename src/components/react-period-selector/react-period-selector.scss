@@ -1,0 +1,96 @@
+$brand: #a044ff;
+$default: rgb(132, 144, 149);
+$boundary: #edeeef;
+
+.ps-header {
+  width: 100%;
+  text-align: right;
+  height: 50px;
+  border-bottom: solid 1px #edeeef;
+  padding-top: 15px;
+  .ps-header-type {
+    text-transform: capitalize;
+    padding: 5px 10px;
+    border: solid 1px $brand;
+    margin: 0 5px;
+    cursor: pointer;
+  }
+  .active {
+    background-color: $brand;
+    color: white;
+  }
+}
+
+.ps-options {
+  width: 300px;
+  max-height: 400px;
+  overflow: scroll;
+  .ps-options-header {
+    font-size: 15px;
+    margin-top: 15px;
+    color: $default;
+    i {
+      font-size: 30px;
+      cursor: pointer;
+    }
+    i:hover, .cat:hover {
+      color: $brand !important;
+    }
+  }
+  .ps-options {
+    padding: 14px 8px;
+  }
+  .ps-option {
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    width: 60px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 1px;
+    margin-bottom: 1px;
+  }
+  .ps-option:hover {
+    border: 1px solid black;
+  }
+  .ps-range {
+    background-color: $brand;
+    opacity: 0.5;
+    color: white;
+  }
+  .ps-edge {
+    background-color: $brand;
+    color: white;
+    opacity: 1;
+  }
+}
+.ps-presets {
+  max-height: 400px;
+  float: left;
+  width: 150px;
+  border-right: solid 1px $boundary;
+  border-top-right-radius: 0 !important;
+  overflow: scroll;
+
+  .ps-preset {
+    padding: 15px 0;
+    font-size: 20px;
+    border-bottom: solid 1px $boundary;
+    cursor: pointer;
+    &.active {
+      background-color: rgba($brand, 0.5) !important;
+      color: white;
+    }
+  }
+  .ps-preset:hover {
+    background-color: $brand;
+    color: white;
+  }
+}
+
+.ps-with-presets {
+  width: 450px;
+}
+.ps-without-presets {
+  width: 320px;
+}
