@@ -24,7 +24,8 @@ export interface PeriodSelectorPreset {
 
 export interface PeriodSelectorProps {
   onUpdateDateRange: (periodType: PeriodTypes, periodRange: DateRange) => void;
-  defaultRange?: DateRange;
+  rangeRestriction?: DateRange
+  defaultSelectedRange?: DateRange;
   presets?: PeriodSelectorPreset[];
   defaultPeriodType?: PeriodTypes
 }
@@ -51,3 +52,5 @@ export const defaultPeriodSelectorState: PeriodSelectorState = {
     endDate: ''
   }
 };
+
+export const defaultStartDate: string = '1963-05-12';

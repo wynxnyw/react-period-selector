@@ -6,13 +6,15 @@ import {
   defaultPeriodSelectorState,
   PeriodSelectorPreset,
   getEdgeOfPeriod,
-  PeriodTypeOptions, getOptionsByType
+  PeriodTypeOptions, getOptionsByType,
+  defaultFormat,
+  defaultStartDate
 } from "./";
 import './react-period-selector.scss'
 import Moment from 'moment'
 
 export function ReactPeriodSelector(props: PeriodSelectorProps) {
-  const { onUpdateDateRange, defaultRange, presets, defaultPeriodType } = props;
+  const { onUpdateDateRange, defaultSelectedRange, presets, defaultPeriodType, rangeRestriction = {startDate: defaultStartDate, endDate: Moment().format(defaultFormat)} } = props;
 
   const [state, setState] = useState<PeriodSelectorState>(defaultPeriodSelectorState);
   const [showPeriodSelector, setShowPeriodSelector] = useState<boolean>(false);
@@ -25,10 +27,11 @@ export function ReactPeriodSelector(props: PeriodSelectorProps) {
     document.addEventListener("mousedown", closeDatePicker);
 
     let newDateRange;
-
+    let options = state.options;
     if(isInitialMount.current) {
-      newDateRange = defaultRange ?? dateRange
+      newDateRange = defaultSelectedRange ?? dateRange;
       isInitialMount.current = false;
+      options = getOptionsByType(rangeRestriction, defaultPeriodType ?? 'month');
     }
     else {
       newDateRange = {
@@ -36,16 +39,13 @@ export function ReactPeriodSelector(props: PeriodSelectorProps) {
         endDate: getEdgeOfPeriod(dateRange.endDate, periodType, 'end')
       };
     }
-
-    const options = getOptionsByType(defaultRange ?? dateRange, periodType);
     const newPeriodType = periodRestriction ? periodRestriction : defaultPeriodType ? defaultPeriodType : periodType;
-
 
     setState({...state, dateRange: newDateRange, periodType: newPeriodType, options});
     return () => {
       document.removeEventListener("mousedown", closeDatePicker);
     };
-  }, [periodType]);
+  }, []);
 
   function closeDatePicker(e: any) {
     if (!node.current?.contains(e.target)) {
@@ -76,6 +76,9 @@ export function ReactPeriodSelector(props: PeriodSelectorProps) {
   }
 
   function selectPreset(preset: PeriodSelectorPreset) {
+    const presetEndMoment = Moment(preset.dateRange.endDate);
+    if(presetEndMoment.isAfter(rangeRestriction.endDate)) preset.dateRange.endDate = rangeRestriction.endDate;
+
     setState({...state, choosingStart: true, dateRange: preset.dateRange, chosenPreset: preset});
     onUpdateDateRange(periodType, preset.dateRange)
   }
@@ -130,7 +133,7 @@ export function ReactPeriodSelector(props: PeriodSelectorProps) {
         { PeriodTypeOptions.map((PeriodTypeOption, index) => (
             <span key={index}
                   className={`ps-header-type ${periodType === PeriodTypeOption && 'active'}`}
-                  onClick={() => PeriodTypeOption && setState({...state, periodType: PeriodTypeOption})}>
+                  onClick={() => PeriodTypeOption && setState({...state, periodType: PeriodTypeOption, options: getOptionsByType(rangeRestriction, PeriodTypeOption)})}>
           {PeriodTypeOption}
         </span>
         ))}
@@ -149,15 +152,15 @@ export function ReactPeriodSelector(props: PeriodSelectorProps) {
       </div>
   );
 
-  const writeOptions = (x: any) =>  {
-    return x.map((y: any) => {
+  const writeOptions = (x: PeriodSelectorPreset[]) =>  {
+    return x.map((y: any, index) => {
       let classes = 'ps-option';
       if(isStartDate(y.dateRange)) classes+= ' ps-edge ps-edge-start';
       else if(isEndDate(y.dateRange)) classes+= ' ps-edge ps-edge-end';
 
       if(isInRange(y.dateRange)) classes+= ' ps-range';
       return (
-          <div className={classes} onClick={() => updateDates(y.dateRange)}>
+          <div key={index} className={classes} onClick={() => updateDates(y.dateRange)}>
             {y.label}
           </div>
       )
@@ -179,7 +182,7 @@ export function ReactPeriodSelector(props: PeriodSelectorProps) {
               Object.entries(options).map(x => (
                       <>
                         <div className='col-12 ps-options-header text-left'>
-                          <span className='cursor-pointer cat'>{x[0]}</span>
+                          <span className='cursor-pointer cat' >{x[0]}</span>
                         </div>
                         { writeOptions(x[1]) }
                       </>
