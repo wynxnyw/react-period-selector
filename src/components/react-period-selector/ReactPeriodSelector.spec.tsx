@@ -1,6 +1,7 @@
 import React from 'react';
 import {ReactPeriodSelector, PeriodSelectorProps, defaultFormat, defaultStartDate, DateRange} from "./";
 import {mount} from "enzyme";
+import Adapter from 'enzyme-adapter-react-16';
 import moment from "moment";
 
 describe('React PeriodSelector', () => {
